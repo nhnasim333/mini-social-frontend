@@ -30,10 +30,9 @@ const Register = () => {
       };
 
       const res = await registerUser(userInfo);
-      console.log(res);
 
       if (res?.error) {
-        toast.error("Email already exists", {
+        toast.error(res?.error?.data?.message || "Registration failed", {
           id: toastId,
           duration: 2000,
         });
@@ -49,7 +48,6 @@ const Register = () => {
       if (error instanceof Error && error.message) {
         message = error.message;
       }
-      console.error(error);
       toast.error(message, { id: toastId, duration: 2000 });
     }
   };

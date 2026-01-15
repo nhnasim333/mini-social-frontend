@@ -34,19 +34,17 @@ const Login = () => {
       };
 
       const res = await userLogin(userInfo).unwrap();
-      console.log(res);
 
-      const user = verifyToken(res.token);
-      dispatch(setUser({ user, token: res.token }));
+      const user = verifyToken(res?.data?.accessToken);
+      dispatch(setUser({ user, token: res?.data?.accessToken }));
 
       toast.success("Logged in successfully!", { id: toastId, duration: 2000 });
       navigate("/");
     } catch (error) {
       let message = "Something went wrong!";
-      if (error instanceof Error && error.message) {
-        message = error.message;
+      if (error) {
+        message = error?.data?.message || error.message;
       }
-      console.error(error);
       toast.error(message, { id: toastId, duration: 2000 });
     }
   };
