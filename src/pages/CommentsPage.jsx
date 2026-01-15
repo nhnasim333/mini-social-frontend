@@ -114,7 +114,7 @@ const CommentsPage = () => {
 
   const handleDelete = async () => {
     try {
-      await deleteComment(deleteId).unwrap();
+      await deleteComment(deleteId)
       toast.success("Comment deleted successfully!");
       setDeleteId(null);
     } catch (error) {
@@ -362,6 +362,7 @@ const CommentsPage = () => {
                 onEdit={handleEdit}
                 onDelete={() => setDeleteId(comment._id)}
                 onLike={handleLike}
+                setDeleteId={setDeleteId}
                 onDislike={handleDislike}
                 onReply={handleReply}
               />

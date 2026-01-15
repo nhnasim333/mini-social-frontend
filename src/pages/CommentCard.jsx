@@ -6,14 +6,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Edit, MessageCircle, MoreVertical, ThumbsDown, ThumbsUp, Trash2 } from "lucide-react";
+import { useGetRepliesQuery } from "@/redux/features/comment/commentApi";
+import { ChevronDown, ChevronUp, Edit, MessageCircle, MoreVertical, ThumbsDown, ThumbsUp, Trash2 } from "lucide-react";
 import PropTypes from "prop-types";
+import { useState } from "react";
+import ReplyCard from "./ReplyCard";
 
 const CommentCard = ({
   comment,
   user,
   onEdit,
   onDelete,
+  setDeleteId,
   onLike,
   onDislike,
   onReply,
@@ -21,6 +25,17 @@ const CommentCard = ({
   const isOwner = user?.userId === comment.user;
   const hasLiked = comment.likes?.includes(user?.userId);
   const hasDisliked = comment.dislikes?.includes(user?.userId);
+  const [showReplies, setShowReplies] = useState(false);
+
+
+    const { data: repliesData, isLoading: repliesLoading } = useGetRepliesQuery(
+    comment._id,
+    {
+      skip: !showReplies,
+    }
+  );
+
+  const repliesCount = repliesData?.data?.length || 0;
 
   return (
     <Card className="border-0 shadow-lg bg-white/95 backdrop-blur-sm hover:shadow-xl transition-all">
@@ -129,6 +144,56 @@ const CommentCard = ({
                 Reply
               </Button>
             </div>
+              {/* Replies Section */}
+            {comment.replyCount > 0 && (
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowReplies(!showReplies)}
+                  className="text-blue-600 hover:bg-blue-50 font-medium"
+                >
+                  {showReplies ? (
+                    <ChevronUp className="w-4 h-4 mr-2" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 mr-2" />
+                  )}
+                  {showReplies ? "Hide" : "View"} {comment.replyCount}{" "}
+                  {comment.replyCount === 1 ? "Reply" : "Replies"}
+                </Button>
+
+                {/* Display Replies */}
+                {showReplies && (
+                  <div className="mt-4 space-y-4 pl-4 border-l-2 border-blue-200">
+                    {repliesLoading ? (
+                      <div className="flex items-center justify-center py-4">
+                        <div className="animate-spin w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+                        <span className="ml-2 text-sm text-gray-600">
+                          Loading replies...
+                        </span>
+                      </div>
+                    ) : repliesCount > 0 ? (
+                      repliesData?.data?.map((reply) => (
+                        <ReplyCard
+                          key={reply._id}
+                          reply={reply}
+                          user={user}
+                          onEdit={onEdit}
+                          onDelete={onDelete}
+                          setDeleteId={setDeleteId}
+                          onLike={onLike}
+                          onDislike={onDislike}
+                        />
+                      ))
+                    ) : (
+                      <p className="text-sm text-gray-500 py-2">
+                        No replies yet.
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </CardContent>
@@ -141,6 +206,7 @@ CommentCard.propTypes = {
   user: PropTypes.object,
   onEdit: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
+setDeleteId: PropTypes.func.isRequired,
   onLike: PropTypes.func.isRequired,
   onDislike: PropTypes.func.isRequired,
   onReply: PropTypes.func.isRequired,
