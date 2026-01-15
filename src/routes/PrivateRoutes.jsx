@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { selectCurrentUser } from "../../redux/features/auth/authSlice";
+import { selectCurrentUser } from "../redux/features/auth/authSlice";
 
 const PrivateRoute = ({ children }) => {
   const user = useSelector(selectCurrentUser);

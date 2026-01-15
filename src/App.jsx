@@ -1,8 +1,11 @@
+import MainLayout from "./pages/MainLayout";
+import PrivateRoute from "./routes/PrivateRoutes";
+
 const App = () => {
   return (
-    <div>
-      Hello react
-    </div>
+    <PrivateRoute>
+      <MainLayout />
+    </PrivateRoute>
   );
 };
 
